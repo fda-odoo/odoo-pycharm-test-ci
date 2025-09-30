@@ -12,6 +12,34 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Extract version info
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          MINOR=$(echo "$TAG" | cut -d. -f2)
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          echo "changelog_url=https://raw.githubusercontent.com/odoo/odoo-ls/$TAG/changelog.md" >> $GITHUB_OUTPUT
+          if [ $((MINOR % 2)) -eq 1 ]; then
+            echo "command=package --prerelease" >> $GITHUB_OUTPUT
+          else
+            echo "command=package" >> $GITHUB_OUTPUT
+          fi
+      - name: Download changelog
+        run: |
+          wget ${{ steps.version.outputs.changelog_url }} -O CHANGELOG.md
+
+      - name: Download language server ${{ matrix.target }}
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-${{ matrix.target }}-$VERSION.zip -O odoo-ls.zip
+          unzip odoo-ls.zip -d .
+          rm odoo-ls.zip
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-${{ matrix.target }}-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz
+          rm odoo-ls.tar.gz
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
