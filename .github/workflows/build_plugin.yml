@@ -44,7 +44,7 @@ jobs:
           tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-x64
           rm odoo-ls.tar.gz
           wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-linux-aarch64-$VERSION.tar.gz -O odoo-ls.tar.gz
-          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-aarch64
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-arm64
           rm odoo-ls.tar.gz
           wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-darwin-x86_64-$VERSION.tar.gz -O odoo-ls.tar.gz
           tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/darwin-x64
