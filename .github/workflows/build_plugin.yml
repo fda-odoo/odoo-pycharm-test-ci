@@ -34,11 +34,23 @@ jobs:
       - name: Download language server ${{ matrix.target }}
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-${{ matrix.target }}-$VERSION.zip -O odoo-ls.zip
-          unzip odoo-ls.zip -d .
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-win32-x86_64-$VERSION.zip -O odoo-ls.zip
+          unzip odoo-ls.zip -d src/main/resources/odools-binaries/win32-x64
           rm odoo-ls.zip
-          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-${{ matrix.target }}-$VERSION.tar.gz -O odoo-ls.tar.gz
-          tar -xvzf odoo-ls.tar.gz
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-win32-aarch64-$VERSION.zip -O odoo-ls.zip
+          unzip odoo-ls.zip -d src/main/resources/odools-binaries/win32-arm64
+          rm odoo-ls.zip
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-linux-x86_64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-x64
+          rm odoo-ls.tar.gz
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-linux-aarch64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/linux-aarch64
+          rm odoo-ls.tar.gz
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-darwin-x86_64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/darwin-x64
+          rm odoo-ls.tar.gz
+          wget https://github.com/fda-odoo/odoo-ls-test-ci/releases/download/$VERSION/odoo-darwin-aarch64-$VERSION.tar.gz -O odoo-ls.tar.gz
+          tar -xvzf odoo-ls.tar.gz -C src/main/resources/odools-binaries/darwin-arm64
           rm odoo-ls.tar.gz
 
       - name: Set up JDK 17
