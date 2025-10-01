@@ -67,3 +67,51 @@ jobs:
         with:
           name: pycharm-plugin
           path: build/distributions/*.zip
+
+
+  release:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./dist
+
+      - name: Extract version info
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          MINOR=$(echo "$TAG" | cut -d. -f2)
+          echo "changelog_url=https://raw.githubusercontent.com/odoo/odoo-ls/$TAG/changelog.md" >> $GITHUB_OUTPUT
+          if [ $((MINOR % 2)) -eq 1 ]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+            echo "title=$TAG - Beta" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "title=$TAG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download changelog
+        run: |
+          wget ${{ steps.version.outputs.changelog_url }}
+
+      - name: Extract changelog entry
+        id: changelog
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          awk "/^## \\[$TAG\\]/ {flag=1; next} /^## \\[/ {flag=0} flag {print}" changelog.md > RELEASE_NOTES.md
+
+      - name: Display files
+        run: ls -R ./dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.version.outputs.title }}
+          tag_name: ${{ github.ref_name }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          body_path: RELEASE_NOTES.md
+          files: ./dist/**/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
